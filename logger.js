@@ -3,25 +3,26 @@ const pino = require("pino");
 const transport = pino.transport({
   target: require.resolve("pino-loki"),
   options: {
-    host: "http://loki-gateway.loki.svc.cluster.local", 
-    
+    host: "http://loki-gateway.loki.svc.cluster.local",
+
     // The multi-tenancy header Loki is expecting
     headers: {
-      "X-Scope-OrgID": "tenant1", 
+      "X-Scope-OrgID": "tenant1",
     },
-    
+
     // Labels help you search in Grafana (service name is already handled by your base object)
     labels: {
-      env: "development" 
+      env: "development",
     },
     propsToLabels: ["service"],
     replaceTimestamp: true,
     // Batching sends logs in chunks to avoid overwhelming the network
     batching: true,
-    interval: 5, 
+    interval: 5,
   },
 });
 
+//logger object
 const logger = pino(
   {
     level: "info",
@@ -29,9 +30,9 @@ const logger = pino(
       service: "order-services",
     },
   },
-  transport
+  transport,
 );
-transport.on('error', (err) => {
-  console.error('🚨 Pino Transport Error (Failed to send to Loki):', err);
+transport.on("error", (err) => {
+  console.error("🚨 Pino Transport Error (Failed to send to Loki):", err);
 });
 module.exports = logger;
